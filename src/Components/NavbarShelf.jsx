@@ -13,7 +13,7 @@ const NavbarShelf = () => {
             <Container>
                 <img src={Grandlog} alt='logo' height="40px" width="60px"/>
                 <Navbar.Brand href="#home">
-                    Shelf Lable Print
+                    SHELF LABEL PRINT
                     </Navbar.Brand>              
             </Container>
         </Navbar>

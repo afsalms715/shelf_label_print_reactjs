@@ -1,0 +1,52 @@
+.shelftag{
+    width: 297px;
+    height: 210px;
+    
+    
+}
+
+
+.block{
+    height:34.8px;
+    width: 296px; 
+}
+
+.block-bg{
+    background-image: url(C:\Users\Afsal\shelf_label_print_reactjs\src\images\shelf-label-sample.jpg);
+    background-repeat: no-repeat;
+    background-size: 296px 34.5px;
+}
+
+.prod-container{
+    height:34.8px;
+    width: 180px; 
+    margin-left: 100px;
+}
+
+.desc-text {   
+    height: 10px;
+    font-size: 9px;
+}
+
+.desc{
+    width:70%;
+    padding-left:5px;
+    text-align: center;
+}
+.desc-ar{
+    margin-top: 3px;
+    display:block;
+}
+.desc-en{
+    margin-top:1px;
+    display:block;
+    font-weight: bold;
+}
+.price-nor{
+
+    font-size: 11px;
+    font-weight: bold;
+}
+.price-shelf{
+    padding-top:10px;
+}
