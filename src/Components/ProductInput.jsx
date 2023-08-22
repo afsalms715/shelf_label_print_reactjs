@@ -1,30 +1,40 @@
-import React from 'react'
+import {useState,useEffect} from 'react'
 import './Styles/ProductInput.css'
 
 const ProductInput = () => {
-    const getProductDtl= ()=>{
-        
+    const [loc,setLoc]=useState(701);
+    const [barcode,setBarcode]=useState();
+    const [sudesc,setSudesc]=useState("");
+    const getProductDtl= (e)=>{
+        fetch("https://localhost:44391/api/ProductDtl/product?barcode=1415&loc=701").then(resp=>resp.json()).then(resp=>{
+            console.log(resp)
+        })
     }
+    useEffect(()=>{
+        console.log(loc)
+        console.log(barcode)
+        console.log(sudesc)
+    },[loc,barcode,sudesc])
 
   return (
-    <div>
+    <div className='ms-auto me-auto'>
         <div className='row p-md-3'>
             <div className='col-md-2'>
                 <label>Location</label>
-                <select className='form-select form-select-sm'>
-                    <option>Grand Mall</option>
-                    <option>Ezdan</option>
+                <select className='form-select form-select-sm' onChange={(e)=>setLoc(e.target.value)}>
+                    <option value="701">Grand Mall</option>
+                    <option value="702">Ezdan</option>
                 </select>
             </div>
             <div className='col-md-3'>
                 <label>Barcode</label>
-                <input type='number' placeholder='barcode' className='form-control form-control-sm ' />
+                <input type='number' placeholder='barcode' value={barcode} className='form-control form-control-sm ' onChange={(e)=>setBarcode(e.target.value)} />
             </div>
             <div className='col-md-5'>
                 <label>Su Description</label>
-                <input type='text' placeholder='su description' className='form-control form-control-sm ' readOnly/>
+                <input type='text' placeholder='su description' className='form-control form-control-sm ' value={sudesc} readOnly/>
             </div>
-            <button className='btn btn-primary btn-sm col-md-2' style={{height:"30px",marginTop:"23px"}}>ADD</button>
+            <button className='btn btn-primary btn-sm col-md-2' style={{height:"30px",marginTop:"23px"}} onClick={(e)=>getProductDtl(e)}>ADD</button>
         </div>
         <div className='row p-md-3'>
             <div className='col'>
@@ -52,7 +62,7 @@ const ProductInput = () => {
                         </tr>
                         <tr>
                         <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
+                        <td colSpan="2">Larry the Bird</td>
                         <td>@twitter</td>
                         </tr>
                     </tbody>
@@ -62,15 +72,15 @@ const ProductInput = () => {
 
         <div className='row'>
             <div className='d-flex justify-content-center'>
-                <div class="shelftag border" id="contents">
-                    <div class="block block-bg">
-                        <div class="prod-container  d-flex">
-                            <div class="desc ">
-                                <small class="desc-ar desc-text" >test</small>
-                                <small class="desc-en desc-text">test</small>
+                <div className="shelftag border" id="contents">
+                    <div className="block block-bg">
+                        <div className="prod-container  d-flex">
+                            <div className="desc ">
+                                <small className="desc-ar desc-text" >test</small>
+                                <small className="desc-en desc-text">test</small>
                             </div>
-                            <div class="price-shelf">
-                                <small class="price-nor">12</small>
+                            <div className="price-shelf">
+                                <small className="price-nor">12</small>
                             </div>
                         </div>
                     </div>                       
