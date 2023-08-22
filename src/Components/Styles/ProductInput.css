@@ -20,7 +20,7 @@
 .prod-container{
     height:34.8px;
     width: 180px; 
-    margin-left: 100px;
+    margin-left: 90px;
 }
 
 .desc-text {   
@@ -29,15 +29,17 @@
 }
 
 .desc{
-    width:70%;
+    width:75%;
     padding-left:5px;
     text-align: center;
 }
 .desc-ar{
-    margin-top: 3px;
+    font-size:6px;
+    margin-top: 9px;
     display:block;
 }
 .desc-en{
+    font-size:6px;
     margin-top:1px;
     display:block;
     font-weight: bold;
@@ -48,5 +50,10 @@
     font-weight: bold;
 }
 .price-shelf{
-    padding-top:10px;
+    width: 50px;
+    padding-top:5px;
+}
+
+.ar-price{
+    font-size: 8px;
 }
