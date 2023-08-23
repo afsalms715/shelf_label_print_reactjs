@@ -1,4 +1,5 @@
 import {useState,useEffect} from 'react'
+import { jsPDF } from "jspdf";
 import './Styles/ProductInput.css'
 
 const ProductInput = () => {
@@ -7,23 +8,28 @@ const ProductInput = () => {
     const [sudesc,setSudesc]=useState("");
     const [sudescAr,setSudescAr]=useState("");
     const[rsp,setRsp]=useState("")
+    const[rspAr,setRspAr]=useState('')
     const [products,setProducts]=useState([])
     const getProductDtl= (e)=>{
-        fetch(`https://localhost:7168/api/Product/GetProduct?Loc=${loc}&Barcode=${barcode}`).then(resp=>resp.json()).then(resp=>{
+        setSudesc("Loading...")
+        fetch(`https://localhost:44391/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
             console.log(resp)
             if(resp.status){
                 setSudesc("Not Found")
             }else{
-                setSudesc(resp.suDesc)
-                setSudescAr(resp.suDesc) 
-                setRsp(resp.rsp)         
+                setSudesc(resp.su_desc)
+                setSudescAr(resp.su_desc_ar) 
+                setRsp(resp.price)
+                setRspAr(numberToArabic(parseFloat(resp.price)))         
             }
         })
     }
 
     useEffect(()=>{
-        if(barcode!=''){
+        if(barcode!='' && barcode.length>=4){
             getProductDtl() 
+        }else{
+            setSudesc("Not Found") 
         }    
     },[barcode])
 
@@ -38,7 +44,8 @@ const ProductInput = () => {
     const addProducts=()=>{
         if(products.length<6){
             if(sudesc!=''){
-                products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
+                //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
+                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
@@ -47,6 +54,53 @@ const ProductInput = () => {
         }else{
             alert("Maximum 6 Products")
         }
+    }
+
+    const numberToArabic=(number)=>{
+        const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        console.log(number)
+        console.log(typeof number)
+        if (typeof number !== 'number') {
+            return 'Invalid input';
+        }
+        
+        const numericString = String(number);
+        let arabicString = '';
+        
+        for (let i = 0; i < numericString.length; i++) {
+            const digit = numericString.charAt(i);
+            if (isNaN(digit)) {
+                arabicString += digit;
+            } else {
+                arabicString += arabicNumerals[parseInt(digit)];
+            }
+        }
+        
+        return arabicString;
+    }
+
+    const generatePdf=()=>{
+        var elements=document.getElementsByClassName("block")
+        console.log(elements)
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].classList.remove("block-bg")
+        }
+        var content = document.getElementById('contents');
+    
+        // Create a new jsPDF instance
+        var pdf = new jsPDF('landscape');
+        pdf.setFont("ArialUnicodeMS", "normal");
+        
+        pdf.html(content, {
+            callback: function(pdf) {
+                // Save the PDF
+                pdf.save('sample-document.pdf');
+            },           
+            x: 0,
+            y: 0,
+            width: 10, //target width in the PDF document
+            height:1 //window width in CSS pixels
+        });
     }
 
   return (
@@ -108,11 +162,18 @@ const ProductInput = () => {
                     <div key={index} className="block block-bg">
                         <div className="prod-container  d-flex">
                             <div className="desc ">
-                                <small className="desc-ar desc-text" >{resp.suDesc}</small>
+                                <small className="desc-ar desc-text" >{resp.sudescAr}</small>
                                 <small className="desc-en desc-text">{resp.suDesc}</small>
                             </div>
-                            <div className="price-shelf">
-                                <small className="price-nor">{resp.rsp} | <span className='ar-price'>{resp.rsp}</span></small>
+                            <div className="price-shelf ">
+                                <div className='qr-normal'>
+                                    <span className='qr'>QR</span>
+                                    <span className="price-nor">{resp.rsp}</span>
+                                </div>
+                                <div className='qr-arb'>
+                                    <span className='qr'>QR</span>
+                                    <span className="price-nor">{resp.rsp}</span>
+                                </div>
                             </div>
                         </div>
                     </div> ) 
@@ -121,7 +182,7 @@ const ProductInput = () => {
             </div>
         </div>
         <div className='row p-md-3'>
-            <button className='btn btn-success btn-sm col w-100'>Generate PDF</button>
+            <button className='btn btn-success btn-sm col w-100' onClick={generatePdf}>Generate PDF</button>
         </div>
     </div>
   )
