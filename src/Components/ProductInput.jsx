@@ -10,6 +10,7 @@ const ProductInput = () => {
     const[rsp,setRsp]=useState("")
     const[rspAr,setRspAr]=useState('')
     const [products,setProducts]=useState([])
+    const [pdfData, setPdfData] = useState(null);
     const getProductDtl= (e)=>{
         setSudesc("Loading...")
         fetch(`https://localhost:44391/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
@@ -79,28 +80,36 @@ const ProductInput = () => {
         return arabicString;
     }
 
-    const generatePdf=()=>{
-        var elements=document.getElementsByClassName("block")
-        console.log(elements)
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].classList.remove("block-bg")
+    const generatePdf= async ()=>{
+        try{
+        const response = await fetch('https://localhost:7168/api/Product/GeneratePdf?invoice=1213');
+        const pdfBlob = await response.blob();
+        setPdfData(pdfBlob);
         }
-        var content = document.getElementById('contents');
+        catch (error) {
+            console.error('Error fetching PDF:', error);
+          }
+        // var elements=document.getElementsByClassName("block")
+        // console.log(elements)
+        // for (let i = 0; i < elements.length; i++) {
+        //     elements[i].classList.remove("block-bg")
+        // }
+        // var content = document.getElementById('contents');
     
-        // Create a new jsPDF instance
-        var pdf = new jsPDF('landscape');
-        pdf.setFont("ArialUnicodeMS", "normal");
+        // // Create a new jsPDF instance
+        // var pdf = new jsPDF('landscape');
+        // pdf.setFont("ArialUnicodeMS", "normal");
         
-        pdf.html(content, {
-            callback: function(pdf) {
-                // Save the PDF
-                pdf.save('sample-document.pdf');
-            },           
-            x: 0,
-            y: 0,
-            width: 10, //target width in the PDF document
-            height:1 //window width in CSS pixels
-        });
+        // pdf.html(content, {
+        //     callback: function(pdf) {
+        //         // Save the PDF
+        //         pdf.save('sample-document.pdf');
+        //     },           
+        //     x: 0,
+        //     y: 0,
+        //     width: 10, //target width in the PDF document
+        //     height:1 //window width in CSS pixels
+        // });
     }
 
   return (
@@ -155,31 +164,9 @@ const ProductInput = () => {
         </div>
 
         <div className='row'>
-            <div className='d-flex justify-content-center'>
-                <div className="shelftag border" id="contents">
-                    {
-                    products.map((resp,index)=>
-                    <div key={index} className="block block-bg">
-                        <div className="prod-container  d-flex">
-                            <div className="desc ">
-                                <small className="desc-ar desc-text" >{resp.sudescAr}</small>
-                                <small className="desc-en desc-text">{resp.suDesc}</small>
-                            </div>
-                            <div className="price-shelf ">
-                                <div className='qr-normal'>
-                                    <span className='qr'>QR</span>
-                                    <span className="price-nor">{resp.rsp}</span>
-                                </div>
-                                <div className='qr-arb'>
-                                    <span className='qr'>QR</span>
-                                    <span className="price-nor">{resp.rsp}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> ) 
-                    }
-                </div>  
-            </div>
+            {pdfData && (
+                <embed src={URL.createObjectURL(pdfData)} type="application/pdf" width="100%" height="800px" />
+            )}
         </div>
         <div className='row p-md-3'>
             <button className='btn btn-success btn-sm col w-100' onClick={generatePdf}>Generate PDF</button>
