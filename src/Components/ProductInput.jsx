@@ -13,15 +13,22 @@ const ProductInput = () => {
     const [pdfData, setPdfData] = useState(null);
     const getProductDtl= (e)=>{
         setSudesc("Loading...")
-        fetch(`https://localhost:44391/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
+        fetch(`https://localhost:7168/api/Product/GetProduct?Loc=${loc}&Barcode=${barcode}`).then(resp=>{
+            console.log(resp)
+            return resp.json()
+        }).then(resp=>{
             console.log(resp)
             if(resp.status){
                 setSudesc("Not Found")
             }else{
-                setSudesc(resp.su_desc)
-                setSudescAr(resp.su_desc_ar) 
-                setRsp(resp.price)
-                setRspAr(numberToArabic(parseFloat(resp.price)))         
+                setSudesc(resp.suDesc)
+                setSudescAr(resp.suDesc) 
+                setRsp(resp.rsp)
+                setRspAr(numberToArabic(parseFloat(resp.rsp)))
+                let firstNum=parseInt(resp.rsp)
+                let secondNum=(parseFloat(resp.rsp)-parseInt(resp.rsp))*100
+                console.log('first:'+firstNum)
+                console.log('second:'+secondNum)        
             }
         })
     }
@@ -46,7 +53,7 @@ const ProductInput = () => {
         if(products.length<6){
             if(sudesc!=''){
                 //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
-                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
+                setProducts([...products,{"id":products.length,"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
@@ -82,7 +89,11 @@ const ProductInput = () => {
 
     const generatePdf= async ()=>{
         try{
-        const response = await fetch('https://localhost:7168/api/Product/GeneratePdf?invoice=1213');
+        //var jsonData=JSON.parse(products)
+        //console.log(jsonData)
+        var jsonString=  JSON.stringify(products)  
+        console.log(jsonString)
+        const response = await fetch(`https://localhost:7168/api/Product/GeneratePdf?jsonString=${JSON.stringify(products)}`);
         const pdfBlob = await response.blob();
         setPdfData(pdfBlob);
         }
