@@ -9,8 +9,11 @@ const ProductInput = () => {
     const [sudescAr,setSudescAr]=useState("");
     const[rsp,setRsp]=useState("")
     const[rspAr,setRspAr]=useState('')
+    const[intRsp,setIntRsp]=useState("")
+    const[floatRsp,setFloatRsp]=useState('')
     const [products,setProducts]=useState([])
     const [pdfData, setPdfData] = useState(null);
+    const [loading,setLoading]=useState(false)
     const getProductDtl= (e)=>{
         setSudesc("Loading...")
         fetch(`https://localhost:44391/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
@@ -21,7 +24,9 @@ const ProductInput = () => {
                 setSudesc(resp.su_desc)
                 setSudescAr(resp.su_desc_ar) 
                 setRsp(resp.price)
-                setRspAr(numberToArabic(parseFloat(resp.price)))         
+                setRspAr(numberToArabic(parseFloat(resp.price)))
+                setIntRsp(parseInt(resp.price))
+                setFloatRsp((parseFloat(resp.price)-parseInt(resp.price))*100)     
             }
         })
     }
@@ -44,17 +49,22 @@ const ProductInput = () => {
 
     const addProducts=()=>{
         if(products.length<6){
-            if(sudesc!=''){
+            if(sudesc!='' && sudesc!='Not Found'){
                 //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
-                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
+                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspIntEn":intRsp,"rspFloatEn":floatRsp,"rspIntAr":numberToArabic(intRsp),"rspFloatAr":numberToArabic(floatRsp)}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
                 console.log(products)
+
             }
         }else{
             alert("Maximum 6 Products")
         }
+    }
+
+    const removeProducts=(indx)=>{
+        setProducts(products.filter((item,index)=>index!=indx))
     }
 
     const numberToArabic=(number)=>{
@@ -81,35 +91,17 @@ const ProductInput = () => {
     }
 
     const generatePdf= async ()=>{
+        if(products.length!=0){
         try{
-        const response = await fetch('https://localhost:7168/api/Product/GeneratePdf?invoice=1213');
+        //const response = await fetch(`https://localhost:44391/api/ProductDtl/GeneratePdf?jsonString=${JSON.stringify(products)}`);
+        const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);
         const pdfBlob = await response.blob();
         setPdfData(pdfBlob);
         }
         catch (error) {
             console.error('Error fetching PDF:', error);
           }
-        // var elements=document.getElementsByClassName("block")
-        // console.log(elements)
-        // for (let i = 0; i < elements.length; i++) {
-        //     elements[i].classList.remove("block-bg")
-        // }
-        // var content = document.getElementById('contents');
-    
-        // // Create a new jsPDF instance
-        // var pdf = new jsPDF('landscape');
-        // pdf.setFont("ArialUnicodeMS", "normal");
-        
-        // pdf.html(content, {
-        //     callback: function(pdf) {
-        //         // Save the PDF
-        //         pdf.save('sample-document.pdf');
-        //     },           
-        //     x: 0,
-        //     y: 0,
-        //     width: 10, //target width in the PDF document
-        //     height:1 //window width in CSS pixels
-        // });
+        }
     }
 
   return (
@@ -147,6 +139,7 @@ const ProductInput = () => {
                             <th scope="col">Su Description</th>
                             <th scope="col">Su Description Arabic</th>
                             <th scope="col">Price</th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,6 +149,7 @@ const ProductInput = () => {
                                 <td>{resp.suDesc}</td>
                                 <td>{resp.sudescAr}</td>
                                 <td>{resp.rsp}</td>
+                                <td><button className='btn btn-sm btn-danger' onClick={()=>removeProducts(index)}>Remove</button></td>
                             </tr>
                         )}
                     </tbody>
@@ -169,7 +163,11 @@ const ProductInput = () => {
             )}
         </div>
         <div className='row p-md-3'>
-            <button className='btn btn-success btn-sm col w-100' onClick={generatePdf}>Generate PDF</button>
+            {loading?(<div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>):
+                (<button className='btn btn-success btn-sm col w-100' onClick={generatePdf}>Generate PDF</button>)
+            }
         </div>
     </div>
   )
