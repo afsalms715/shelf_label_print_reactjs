@@ -25,9 +25,7 @@ const ProductInput = () => {
                 setSudesc(resp.su_desc)
                 setSudescAr(resp.su_desc_ar) 
                 setRsp(resp.price)
-                setRspAr(numberToArabic(parseFloat(resp.price)))
-                setIntRsp(parseInt(resp.price))
-                setFloatRsp((parseFloat(resp.price)-parseInt(resp.price))*100)     
+                setRspAr(numberToArabic(parseFloat(resp.price)))         
             }
         })
     }
@@ -52,8 +50,7 @@ const ProductInput = () => {
         if(products.length<6){
             if(sudesc!='' && sudesc!='Not Found' && sudesc!="Loading..."){
                 //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
-                console.log(sudesc.replace(/&/g, ''))
-                setProducts([...products,{"barcode":barcode,"suDesc":sudesc.replace(/&/g, ''),"sudescAr":sudescAr,"rsp":rsp,"rspIntEn":intRsp,"rspFloatEn":floatRsp,"rspIntAr":numberToArabic(intRsp),"rspFloatAr":numberToArabic(floatRsp)}])
+                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
@@ -95,12 +92,7 @@ const ProductInput = () => {
     const generatePdf= async ()=>{
         if(products.length!=0){
         try{
-            //decimal point and zero based on rsp length
-            console.log(products)
-
-        //const response = await fetch(`https://localhost:44391/api/ProductDtl/GeneratePdf?jsonString=${JSON.stringify(products)}`);
-        //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//production
-        const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);//testing
+        const response = await fetch('https://localhost:7168/api/Product/GeneratePdf?invoice=1213');
         const pdfBlob = await response.blob();
         setPdfData(pdfBlob);
         }
