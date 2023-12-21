@@ -25,7 +25,9 @@ const ProductInput = () => {
                 setSudesc(resp.su_desc)
                 setSudescAr(resp.su_desc_ar) 
                 setRsp(resp.price)
-                setRspAr(numberToArabic(parseFloat(resp.price)))         
+                setRspAr(numberToArabic(parseFloat(resp.price)))
+                setIntRsp(Math.floor(resp.price))
+                setFloatRsp((resp.price-Math.floor(resp.price))*10)         
             }
         })
     }
@@ -92,10 +94,11 @@ const ProductInput = () => {
     const generatePdf= async ()=>{
         if(products.length!=0){
         try{
+            console.log(products)
             //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//production
             const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);//testing
-        const pdfBlob = await response.blob();
-        setPdfData(pdfBlob);
+            const pdfBlob = await response.blob();
+            setPdfData(pdfBlob);
         }
         catch (error) {
             console.error('Error fetching PDF:', error);
