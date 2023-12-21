@@ -1,6 +1,7 @@
 import {useState,useEffect} from 'react'
 import { jsPDF } from "jspdf";
 import './Styles/ProductInput.css'
+import { propTypes } from 'react-bootstrap/esm/Image';
 
 const ProductInput = () => {
     const [loc,setLoc]=useState(701);
@@ -16,7 +17,7 @@ const ProductInput = () => {
     const [loading,setLoading]=useState(false)
     const getProductDtl= (e)=>{
         setSudesc("Loading...")
-        fetch(`https://localhost:44391/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
+        fetch(`http://192.168.51.26:8087/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
             console.log(resp)
             if(resp.status){
                 setSudesc("Not Found")
@@ -49,9 +50,10 @@ const ProductInput = () => {
 
     const addProducts=()=>{
         if(products.length<6){
-            if(sudesc!='' && sudesc!='Not Found'){
+            if(sudesc!='' && sudesc!='Not Found' && sudesc!="Loading..."){
                 //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
-                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspIntEn":intRsp,"rspFloatEn":floatRsp,"rspIntAr":numberToArabic(intRsp),"rspFloatAr":numberToArabic(floatRsp)}])
+                console.log(sudesc.replace(/&/g, ''))
+                setProducts([...products,{"barcode":barcode,"suDesc":sudesc.replace(/&/g, ''),"sudescAr":sudescAr,"rsp":rsp,"rspIntEn":intRsp,"rspFloatEn":floatRsp,"rspIntAr":numberToArabic(intRsp),"rspFloatAr":numberToArabic(floatRsp)}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
@@ -93,8 +95,12 @@ const ProductInput = () => {
     const generatePdf= async ()=>{
         if(products.length!=0){
         try{
+            //decimal point and zero based on rsp length
+            console.log(products)
+
         //const response = await fetch(`https://localhost:44391/api/ProductDtl/GeneratePdf?jsonString=${JSON.stringify(products)}`);
-        const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);
+        //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//production
+        const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);//testing
         const pdfBlob = await response.blob();
         setPdfData(pdfBlob);
         }
@@ -105,7 +111,7 @@ const ProductInput = () => {
     }
 
   return (
-    <div className='ms-auto me-auto'>
+    <div className='ms-auto me-auto container'>
         <div className='row p-md-3'>
             <div className='col-md-2'>
                 <label>Location</label>

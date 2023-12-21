@@ -9,11 +9,13 @@ import Grandlog from '../images/grandlogo.png'
 const NavbarShelf = () => {
   return (
     <div>
-        <Navbar expand="lg" className="bg-body-tertiary d-flex justify-content-between">       
-                <img src={Grandlog} className='ms-md-5' alt='logo' height="40px" width="60px"/>
-                <Navbar.Brand className='me-md-5' href="#home">
-                    SHELF LABEL PRINT
-                </Navbar.Brand>              
+        <Navbar expand="lg" className="bg-body-tertiary d-flex justify-content-between ">
+                <div className='container'>       
+                  <img src={Grandlog} className='ms-md-5' alt='logo' height="40px" width="60px"/>
+                  <Navbar.Brand className='me-md-5 ' href="#home">
+                      SHELF LABEL PRINT
+                  </Navbar.Brand>
+                </div>              
         </Navbar>
     </div>
   )
