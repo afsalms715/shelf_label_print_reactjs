@@ -50,7 +50,7 @@ const ProductInput = () => {
         if(products.length<6){
             if(sudesc!='' && sudesc!='Not Found' && sudesc!="Loading..."){
                 //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
-                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
+                setProducts([...products,{"barcode":barcode,"suDesc":sudesc.replace(/&/g, ''),"sudescAr":sudescAr,"rsp":rsp,"rspIntEn":intRsp,"rspFloatEn":floatRsp,"rspIntAr":numberToArabic(intRsp),"rspFloatAr":numberToArabic(floatRsp)}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
@@ -92,7 +92,8 @@ const ProductInput = () => {
     const generatePdf= async ()=>{
         if(products.length!=0){
         try{
-        const response = await fetch('https://localhost:7168/api/Product/GeneratePdf?invoice=1213');
+            //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//production
+            const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);//testing
         const pdfBlob = await response.blob();
         setPdfData(pdfBlob);
         }
