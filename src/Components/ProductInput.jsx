@@ -17,7 +17,7 @@ const ProductInput = () => {
     const [loading,setLoading]=useState(false)
     const getProductDtl= (e)=>{
         setSudesc("Loading...")//production version date 23-dec-23
-        fetch(`http://192.168.51.26:8087/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
+        fetch(`http://192.168.51.252/ShelfLabelApi/api/ProductDetail/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
             console.log(resp)
             if(resp.status){
                 setSudesc("Not Found")
@@ -95,8 +95,9 @@ const ProductInput = () => {
         if(products.length!=0){
         try{
             console.log(products)
-            //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//production
-            const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);//testing
+            //http://192.168.51.252:85/generate-pdf?products=[{%22barcode%22:%221440%22,%22suDesc%22:%22BANANA%20PHILIPPINE%20KGS%22,%22sudescAr%22:%22%D9%85%D9%88%D8%B2%20%D8%A7%D9%84%D9%81%D9%84%D8%A8%D9%8A%D9%86%22,%22rsp%22:%225.5%22,%22rspIntEn%22:5,%22rspFloatEn%22:50,%22rspIntAr%22:%22%D9%A5%22,%22rspFloatAr%22:%22%D9%A5%D9%A0%22}]
+            //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//testing
+            const response = await fetch(`http://192.168.51.252:85/generate-pdf?products=${JSON.stringify(products)}`);//production
             const pdfBlob = await response.blob();
             setPdfData(pdfBlob);
         }
