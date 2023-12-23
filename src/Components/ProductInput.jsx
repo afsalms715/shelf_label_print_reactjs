@@ -16,7 +16,7 @@ const ProductInput = () => {
     const [pdfData, setPdfData] = useState(null);
     const [loading,setLoading]=useState(false)
     const getProductDtl= (e)=>{
-        setSudesc("Loading...")
+        setSudesc("Loading...")//production version date 23-dec-23
         fetch(`http://192.168.51.26:8087/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
             console.log(resp)
             if(resp.status){
@@ -25,7 +25,9 @@ const ProductInput = () => {
                 setSudesc(resp.su_desc)
                 setSudescAr(resp.su_desc_ar) 
                 setRsp(resp.price)
-                setRspAr(numberToArabic(parseFloat(resp.price)))         
+                setRspAr(numberToArabic(parseFloat(resp.price)))
+                setIntRsp(Math.floor(resp.price))
+                setFloatRsp((resp.price-Math.floor(resp.price))*10)         
             }
         })
     }
@@ -50,7 +52,7 @@ const ProductInput = () => {
         if(products.length<6){
             if(sudesc!='' && sudesc!='Not Found' && sudesc!="Loading..."){
                 //products.push({"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp})
-                setProducts([...products,{"barcode":barcode,"suDesc":sudesc,"sudescAr":sudescAr,"rsp":rsp,"rspAr":rspAr}])
+                setProducts([...products,{"barcode":barcode,"suDesc":sudesc.replace(/&/g, ''),"sudescAr":sudescAr,"rsp":rsp,"rspIntEn":intRsp,"rspFloatEn":floatRsp,"rspIntAr":numberToArabic(intRsp),"rspFloatAr":numberToArabic(floatRsp)}])
                 setBarcode('')
                 setSudesc('')
                 setRsp('')
@@ -92,9 +94,11 @@ const ProductInput = () => {
     const generatePdf= async ()=>{
         if(products.length!=0){
         try{
-        const response = await fetch('https://localhost:7168/api/Product/GeneratePdf?invoice=1213');
-        const pdfBlob = await response.blob();
-        setPdfData(pdfBlob);
+            console.log(products)
+            //const response = await fetch(`http://192.168.51.26:8084/generate-pdf?products=${JSON.stringify(products)}`);//production
+            const response = await fetch(`http://localhost:3002/generate-pdf?products=${JSON.stringify(products)}`);//testing
+            const pdfBlob = await response.blob();
+            setPdfData(pdfBlob);
         }
         catch (error) {
             console.error('Error fetching PDF:', error);
