@@ -16,7 +16,7 @@ const ProductInput = () => {
     const [pdfData, setPdfData] = useState(null);
     const [loading,setLoading]=useState(false)
     const getProductDtl= (e)=>{
-        setSudesc("Loading...")
+        setSudesc("Loading...")//production version date 23-dec-23
         fetch(`http://192.168.51.26:8087/api/ProductDtl/product?barcode=${barcode}&loc=${loc}`).then(resp=>resp.json()).then(resp=>{
             console.log(resp)
             if(resp.status){
